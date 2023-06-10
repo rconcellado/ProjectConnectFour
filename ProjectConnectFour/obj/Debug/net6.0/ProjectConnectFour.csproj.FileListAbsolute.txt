@@ -1,0 +1,15 @@
+C:\Users\Rey\OneDrive\Documents\GitHub\ProjectConnectFour\ProjectConnectFour\bin\Debug\net6.0\ProjectConnectFour.exe
+C:\Users\Rey\OneDrive\Documents\GitHub\ProjectConnectFour\ProjectConnectFour\bin\Debug\net6.0\ProjectConnectFour.deps.json
+C:\Users\Rey\OneDrive\Documents\GitHub\ProjectConnectFour\ProjectConnectFour\bin\Debug\net6.0\ProjectConnectFour.runtimeconfig.json
+C:\Users\Rey\OneDrive\Documents\GitHub\ProjectConnectFour\ProjectConnectFour\bin\Debug\net6.0\ProjectConnectFour.dll
+C:\Users\Rey\OneDrive\Documents\GitHub\ProjectConnectFour\ProjectConnectFour\bin\Debug\net6.0\ProjectConnectFour.pdb
+C:\Users\Rey\OneDrive\Documents\GitHub\ProjectConnectFour\ProjectConnectFour\obj\Debug\net6.0\ProjectConnectFour.csproj.AssemblyReference.cache
+C:\Users\Rey\OneDrive\Documents\GitHub\ProjectConnectFour\ProjectConnectFour\obj\Debug\net6.0\ProjectConnectFour.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Rey\OneDrive\Documents\GitHub\ProjectConnectFour\ProjectConnectFour\obj\Debug\net6.0\ProjectConnectFour.AssemblyInfoInputs.cache
+C:\Users\Rey\OneDrive\Documents\GitHub\ProjectConnectFour\ProjectConnectFour\obj\Debug\net6.0\ProjectConnectFour.AssemblyInfo.cs
+C:\Users\Rey\OneDrive\Documents\GitHub\ProjectConnectFour\ProjectConnectFour\obj\Debug\net6.0\ProjectConnectFour.csproj.CoreCompileInputs.cache
+C:\Users\Rey\OneDrive\Documents\GitHub\ProjectConnectFour\ProjectConnectFour\obj\Debug\net6.0\ProjectConnectFour.dll
+C:\Users\Rey\OneDrive\Documents\GitHub\ProjectConnectFour\ProjectConnectFour\obj\Debug\net6.0\refint\ProjectConnectFour.dll
+C:\Users\Rey\OneDrive\Documents\GitHub\ProjectConnectFour\ProjectConnectFour\obj\Debug\net6.0\ProjectConnectFour.pdb
+C:\Users\Rey\OneDrive\Documents\GitHub\ProjectConnectFour\ProjectConnectFour\obj\Debug\net6.0\ProjectConnectFour.genruntimeconfig.cache
+C:\Users\Rey\OneDrive\Documents\GitHub\ProjectConnectFour\ProjectConnectFour\obj\Debug\net6.0\ref\ProjectConnectFour.dll
