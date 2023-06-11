@@ -1,5 +1,37 @@
-﻿namespace ProjectConnectFour
+﻿using System.Data.Common;
+
+namespace ProjectConnectFour
 {
+    public abstract class Player
+    {
+        public string Name { get; set; }
+        public char Disc { get;set; }
+        public Player(string name, char disc)
+        {
+            Name = name;
+            Disc = disc;
+        }
+        public abstract int GetMove(clsModel model);
+    }
+
+    public class HumanPlayer : Player //Child class derived from Super Abstract Class which is Player
+    {
+        public HumanPlayer(string name, char disc) : base(name, disc)
+        {
+
+        }
+        public override int GetMove(clsModel model)
+        {
+            Console.WriteLine("Enter column (1-7): ");
+            int col;//This statement will validate players move pressing between keys 1 - 7 only
+            while (!int.TryParse(Console.ReadLine(), out col) || col < 0 || col > 6 || !model.IsMoveValid(col))
+            {
+                Console.WriteLine("Invalid move. Please try again.");
+                Console.WriteLine("Enter column (1-7): ");
+            }
+                return col;
+        }
+    }
     /* This will be the Model Class of the program
      */
     public class clsModel
@@ -32,17 +64,40 @@
             }
             Console.WriteLine("   1   2   3   4   5   6   7 ");
         }
+        //Boolean Function to validate players move and return true or false
+        public bool IsMoveValid(int col)
+        {
+            bool IsValid = false;
+            IsValid = col >= 0 && col < cntsCol; //&& board[0, col] == ' ';
+            return IsValid;
+        }
     }
     /*This will be the controller class of the program
      */
     public class clsController
     {
         private clsModel model;
+        private Player FirstPlayer;
+        private Player CurPlayer;
         public clsController() { model = new clsModel(); }
+
+        public void PlayerSetup(Player firstPlayer)
+        {
+            this.FirstPlayer = firstPlayer;
+            CurPlayer = firstPlayer;
+        }
 
         public void PlayGame()
         {
-            model.BoardLayOut();
+            bool _gameEnd = false;
+
+            while (!_gameEnd)
+            {
+                model.BoardLayOut();
+
+                int move = CurPlayer.GetMove(model);
+                
+            }
         }
     }
     /*Main class of the program that
@@ -51,7 +106,11 @@
     {
         public static void Main(string[] args)
         {
+            HumanPlayer Human = new HumanPlayer("Player 1", 'O');
+
             clsController Controller = new clsController();
+
+            Controller.PlayerSetup(Human);
             Controller.PlayGame();
 
         }
