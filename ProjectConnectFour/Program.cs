@@ -1,179 +1,314 @@
-﻿using System.Data.Common;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.Runtime.CompilerServices;
 
-namespace ProjectConnectFour
+namespace Connect4
 {
-    public abstract class Player
+    public struct HumanPlayer
     {
-        public string Name { get; set; }
-        public char Disc { get;set; }
-        public Player(string name, char disc)
-        {
-            Name = name;
-            Disc = disc;
-        }
-        public abstract int GetMove(clsModel model);
+        public string PlayerName;
+        public char PlayerID;
     }
 
-    public class HumanPlayer : Player //Child class derived from Super Abstract Class which is Player
-    {
-        public HumanPlayer(string name, char disc) : base(name, disc)
-        {
-
-        }
-        public override int GetMove(clsModel model)
-        {
-            Console.WriteLine("Enter column (1-7): ");
-            int col;//This statement will validate players move pressing between keys 1 - 7 only
-            while (!int.TryParse(Console.ReadLine(), out col) || col < 0 || col > 6 || !model.IsMoveValid(col))
-            {
-                Console.WriteLine("Invalid move. Please try again.");
-                Console.WriteLine("Enter column (1-7): ");
-            }
-                return col;
-        }
-    }
-   public class ComputerPlayer : Player
-    {
-        public ComputerPlayer(string name,char disc) : base(name, disc) 
-        {
-        }
-        public override int GetMove(clsModel model)
-        {
-            Random random = new Random();
-            int column;
-            do
-            {
-                column = random.Next(0, 7);
-            } while (!model.IsMoveValid(column));
-            return column;
-        }
-    }
     public class clsModel
     {
         private char[,] board;
-        public const int cntsRows = 6;
-        public const int cntsCol = 7;
+        private int _win;
+        private int _full;
 
         public clsModel()
         {
-            board = new char[cntsRows, cntsCol];
-           
+            board = new char[9, 10];
         }
-        /*This public void method will initialize the board apperance in
-         the initial run of the program
-        */
-        public void BoardLayOut()
-        {
-            Console.WriteLine("Connect 4 Game Development Project:");
-            //Loop though the Rows which have 6 Rows
-            for (int irow = 0; irow < cntsRows; irow++)
-            {
-               Console.Write("|");
-                //Loop through the columns which have 7 columns
-                for (int icol = 0; icol < cntsCol; icol++)
-                {   //Print the has - # for every board - row,column in the board
-                    Console.Write("#" + board[irow, icol]);
-                }
-                Console.WriteLine("|");
-            }
-        }
-        public void BoardDesign(char[,] board)
-        {
-            int i_rows = 6, i_cols = 7, i, ix;
 
-            for (i = 1; i <= i_rows; i++)
+        public void DisplayBoard()
+        {
+            int rows = 6;
+            int columns = 7;
+
+            for (int i = 1; i <= rows; i++)
             {
                 Console.Write("|");
-                for (ix = 1; ix <= i_cols; ix++)
+                for (int j = 1; j <= columns; j++)
                 {
-                    if (board[i, ix] != 'X' && board[i, ix] != 'O')
-                        board[i, ix] = '*';
-
-                    Console.Write(board[i, ix]);
-
+                    if (board[i, j] != 'X' && board[i, j] != 'O')
+                    {
+                        board[i, j] = '*';
+                    }
+                    Console.Write(board[i, j]);
                 }
 
                 Console.Write("| \n");
             }
         }
-        //Boolean Function to validate players move and return true or false
-        public bool IsMoveValid(int col)
-        {
-            bool IsValid = false;
-            IsValid = col >= 0 && col < cntsCol; //&& board[0, col] == ' ';
-            return IsValid;
-        }
-        public bool ConstructMove(int column, char disc)
-        {
-            //if (!IsMoveValid(column))
-            //{
-            //    return false;
-            //}
 
-            for (int row = cntsRows - 1; row >= 0; row--)
+        public int PlayerDrop(HumanPlayer activePlayer)
+        {
+            int choice;
+
+            Console.WriteLine(activePlayer.PlayerName + "'s Turn ");
+            do
             {
-                if (board[row, column] == ' ')
+                Console.WriteLine("Please enter a number between 1 and 7: ");
+                choice = Convert.ToInt32(Console.ReadLine());
+            } while (choice < 1 || choice > 7);
+
+            while (board[1, choice] == 'X' || board[1, choice] == 'O')
+            {
+                Console.WriteLine("That row is _full. Please enter a new row: ");
+                choice = Convert.ToInt32(Console.ReadLine());
+            }
+
+            return choice;
+        }
+
+        public void CheckBellow(HumanPlayer activePlayer, int numselect)
+        {
+            int length = 6;
+            int turn = 0;
+
+            do
+            {
+                if (board[length, numselect] != 'X' && board[length, numselect] != 'O')
                 {
-                    board[row, column] = disc;
-                    return true;
+                    board[length, numselect] = activePlayer.PlayerID;
+                    turn = 1;
+                }
+                else
+                {
+                    --length;
+                }
+            } while (turn != 1);
+        }
+
+        public int CheckFour(HumanPlayer activePlayer)
+        {
+            char XO = activePlayer.PlayerID;
+            int _win = 0;
+
+            for (int i = 8; i >= 1; i--)
+            {
+                for (int j = 9; j >= 1; j--)
+                {
+                    if (board[i, j] == XO &&
+                        board[i - 1, j - 1] == XO &&
+                        board[i - 2, j - 2] == XO &&
+                        board[i - 3, j - 3] == XO)
+                    {
+                        _win = 1;
+                    }
+
+                    if (board[i, j] == XO &&
+                        board[i, j - 1] == XO &&
+                        board[i, j - 2] == XO &&
+                        board[i, j - 3] == XO)
+                    {
+                        _win = 1;
+                    }
+
+                    if (board[i, j] == XO &&
+                        board[i - 1, j] == XO &&
+                        board[i - 2, j] == XO &&
+                        board[i - 3, j] == XO)
+                    {
+                        _win = 1;
+                    }
+
+                    if (board[i, j] == XO &&
+                        board[i - 1, j + 1] == XO &&
+                        board[i - 2, j + 2] == XO &&
+                        board[i - 3, j + 3] == XO)
+                    {
+                        _win = 1;
+                    }
+
+                    if (board[i, j] == XO &&
+                        board[i, j + 1] == XO &&
+                        board[i, j + 2] == XO &&
+                        board[i, j + 3] == XO)
+                    {
+                        _win = 1;
+                    }
                 }
             }
 
-            return false;
+            return _win;
         }
+
+        public int _fullBoard()
+        {
+            int _full = 0;
+            for (int i = 1; i <= 7; i++)
+            {
+                if (board[1, i] != '*')
+                {
+                    _full++;
+                }
+            }
+
+            return _full;
+        }
+
+        public void Player_win(HumanPlayer activePlayer)
+        {
+            Console.WriteLine(activePlayer.PlayerName + " Connected Four! You _win!");
+        }
+
+
     }
-    /*This will be the controller class of the program
-     */
+
     public class clsController
     {
-        private clsModel model;
-        private Player FirstPlayer;
-        private Player SecondPlayer;
-        private Player CurPlayer;
-        public clsController() { model = new clsModel(); }
+        clsModel model;
+        private HumanPlayer _playerOne;
+        private HumanPlayer _playerTwo;
+        private char[,] board;
+        private int _numsel;
+        private int _win;
+        private int _full;
+        private int _another;
 
-        public void PlayerSetup(Player firstPlayer, Player secondPlayer)
+        Game game = new Game();
+
+
+        public clsController()
         {
-            this.FirstPlayer = firstPlayer;
-            this.SecondPlayer = secondPlayer;
-            CurPlayer = firstPlayer;
+            //board = new char[9, 10];
+            _numsel = 0;
+            _win = 0;
+            _full = 0;
+            _another = 0;
+            model = new clsModel();
         }
 
-        public void PlayGame()
+        public void StartGame()
         {
-            bool _gameEnd = false;
+            Console.WriteLine("Let's Play Connect Four");
+            Console.WriteLine("First Player, Please enter your name: ");
+            _playerOne.PlayerName = Console.ReadLine();
+            _playerOne.PlayerID = 'X';
 
-            while (!_gameEnd)
+            Console.WriteLine("Second Player, Please enter your name: ");
+            _playerTwo.PlayerName = Console.ReadLine();
+            _playerTwo.PlayerID = 'O';
+
+            model.DisplayBoard();
+
+            do
             {
-                model.BoardLayOut();
+                _numsel = model.PlayerDrop(_playerOne);
+                model.CheckBellow(_playerOne, _numsel);
+                model.DisplayBoard();
+                _win = model.CheckFour(_playerOne);
 
-                int move = CurPlayer.GetMove(model);
-
-                bool isMoveValid = model.ConstructMove(move, CurPlayer.Disc);
-
-                if(!isMoveValid)
+                if (_win == 1)
                 {
-                    Console.WriteLine("Invalid move. Please try again.");
-                    continue;
+                    model.Player_win(_playerOne);
+                    _another = game.Restart();
+                    if (_another == 2)
+                    {
+                        break;
+                    }
                 }
-                
+                _numsel = model.PlayerDrop(_playerTwo);
+                model.CheckBellow(_playerTwo, _numsel);
+                model.DisplayBoard();
+                _win = model.CheckFour(_playerTwo);
+                if (_win == 1)
+                {
+                    model.Player_win(_playerTwo);
+                    _another = game.Restart();
+                    if (_another == 2)
+                    {
+                        break;
+                    }
+                }
+
+                _full = model._fullBoard();
+
+                if (_full == 7)
+                {
+                    Console.WriteLine("The board is _full. It is a draw!");
+                    _another = game.Restart();
+                }
+
+            } while (_another != 2);
+        }
+    }
+
+    public class GameBoard
+    {
+        private char[,] board;
+        private int rows;
+        private int columns;
+
+        public GameBoard()
+        {
+            rows = 6;
+            columns = 7;
+            board = new char[rows, columns];
+        }
+
+        public void DisplayBoard()
+        {
+            for (int i = 0; i < rows; i++)
+            {
+                Console.Write("|");
+                for (int j = 0; j < columns; j++)
+                {
+                    if (board[i, j] != 'X' && board[i, j] != 'O')
+                    {
+                        board[i, j] = '*';
+                    }
+                    Console.Write(board[i, j]);
+                }
+
+                Console.Write("| \n");
             }
         }
     }
-    /*Main class of the program that
-     */
+
+    public class Game
+    {
+        private char[,] board;
+
+        public Game()
+        {
+            board = new char[6, 7];
+        }
+
+        public int Restart()
+        {
+            int restart;
+
+            Console.WriteLine("Would you like to restart? Yes(1) No(2): ");
+            restart = Convert.ToInt32(Console.ReadLine());
+
+            if (restart == 1)
+            {
+                for (int i = 0; i < 6; i++)
+                {
+                    for (int j = 0; j < 7; j++)
+                    {
+                        board[i, j] = '*';
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("Goodbye!");
+            }
+
+            return restart;
+        }
+    }
+
     public class Program
     {
-        public static void Main(string[] args)
+        static void Main(string[] args)
         {
-            HumanPlayer Human = new HumanPlayer("Player 1", 'O');
-            ComputerPlayer Computer = new ComputerPlayer("Player 2", 'X');
-
-            clsController Controller = new clsController();
-
-            Controller.PlayerSetup(Human,Computer);
-            Controller.PlayGame();
-
+            clsController controller = new clsController();
+            controller.StartGame();
         }
     }
 }
