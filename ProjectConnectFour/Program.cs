@@ -32,8 +32,22 @@ namespace ProjectConnectFour
                 return col;
         }
     }
-    /* This will be the Model Class of the program
-     */
+   public class ComputerPlayer : Player
+    {
+        public ComputerPlayer(string name,char disc) : base(name, disc) 
+        {
+        }
+        public override int GetMove(clsModel model)
+        {
+            Random random = new Random();
+            int column;
+            do
+            {
+                column = random.Next(0, 7);
+            } while (!model.IsMoveValid(column));
+            return column;
+        }
+    }
     public class clsModel
     {
         private char[,] board;
@@ -54,15 +68,33 @@ namespace ProjectConnectFour
             //Loop though the Rows which have 6 Rows
             for (int irow = 0; irow < cntsRows; irow++)
             {
-                Console.Write("|");
+               Console.Write("|");
                 //Loop through the columns which have 7 columns
                 for (int icol = 0; icol < cntsCol; icol++)
                 {   //Print the has - # for every board - row,column in the board
-                    Console.Write("  " + "#" + board[irow, icol] + " ");
+                    Console.Write("#" + board[irow, icol]);
                 }
-                Console.WriteLine(" |");
+                Console.WriteLine("|");
             }
-            Console.WriteLine("   1   2   3   4   5   6   7 ");
+        }
+        public void BoardDesign(char[,] board)
+        {
+            int i_rows = 6, i_cols = 7, i, ix;
+
+            for (i = 1; i <= i_rows; i++)
+            {
+                Console.Write("|");
+                for (ix = 1; ix <= i_cols; ix++)
+                {
+                    if (board[i, ix] != 'X' && board[i, ix] != 'O')
+                        board[i, ix] = '*';
+
+                    Console.Write(board[i, ix]);
+
+                }
+
+                Console.Write("| \n");
+            }
         }
         //Boolean Function to validate players move and return true or false
         public bool IsMoveValid(int col)
@@ -71,6 +103,24 @@ namespace ProjectConnectFour
             IsValid = col >= 0 && col < cntsCol; //&& board[0, col] == ' ';
             return IsValid;
         }
+        public bool ConstructMove(int column, char disc)
+        {
+            //if (!IsMoveValid(column))
+            //{
+            //    return false;
+            //}
+
+            for (int row = cntsRows - 1; row >= 0; row--)
+            {
+                if (board[row, column] == ' ')
+                {
+                    board[row, column] = disc;
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
     /*This will be the controller class of the program
      */
@@ -78,12 +128,14 @@ namespace ProjectConnectFour
     {
         private clsModel model;
         private Player FirstPlayer;
+        private Player SecondPlayer;
         private Player CurPlayer;
         public clsController() { model = new clsModel(); }
 
-        public void PlayerSetup(Player firstPlayer)
+        public void PlayerSetup(Player firstPlayer, Player secondPlayer)
         {
             this.FirstPlayer = firstPlayer;
+            this.SecondPlayer = secondPlayer;
             CurPlayer = firstPlayer;
         }
 
@@ -96,6 +148,14 @@ namespace ProjectConnectFour
                 model.BoardLayOut();
 
                 int move = CurPlayer.GetMove(model);
+
+                bool isMoveValid = model.ConstructMove(move, CurPlayer.Disc);
+
+                if(!isMoveValid)
+                {
+                    Console.WriteLine("Invalid move. Please try again.");
+                    continue;
+                }
                 
             }
         }
@@ -107,10 +167,11 @@ namespace ProjectConnectFour
         public static void Main(string[] args)
         {
             HumanPlayer Human = new HumanPlayer("Player 1", 'O');
+            ComputerPlayer Computer = new ComputerPlayer("Player 2", 'X');
 
             clsController Controller = new clsController();
 
-            Controller.PlayerSetup(Human);
+            Controller.PlayerSetup(Human,Computer);
             Controller.PlayGame();
 
         }
