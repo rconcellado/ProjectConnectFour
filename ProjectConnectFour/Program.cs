@@ -16,21 +16,12 @@ namespace Connect4
         }
     }
 
-    public class HumanPlayers : Player
+    public class HumanPlayer : Player
     {
-        public string Name;
-        public char Id;
-
-        public HumanPlayers(string  playerName, char id) : base(playerName, id)
+        public HumanPlayer(string  playerName, char id) : base(playerName, id)
         {
 
         }
-    }
-
-    public struct HumanPlayer
-    {
-        public string PlayerName;
-        public char PlayerID;
     }
 
     public class clsModel
@@ -65,10 +56,10 @@ namespace Connect4
             }
         }
 
-        public int PlayerDrop(Player activePlayer)
+        public int PlayerNumber(Player activePlayer)
         {
             int choice;
-
+            Console.WriteLine("\n");
             Console.WriteLine(activePlayer.Name + "'s Turn ");
             do
             {
@@ -85,7 +76,7 @@ namespace Connect4
             return choice;
         }
 
-        public void CheckBellow(Player activePlayer, int numselect)
+        public void CheckMove(Player activePlayer, int numselect)
         {
             int length = 6;
             int turn = 0;
@@ -171,48 +162,22 @@ namespace Connect4
 
             return _full;
         }
-
-        public int Restart()
-        {
-            int restart;
-
-            Console.WriteLine("Would you like to restart? Yes(1) No(2): ");
-            restart = Convert.ToInt32(Console.ReadLine());
-
-            if (restart == 1)
-            {
-                for (int i = 0; i < 6; i++)
-                {
-                    for (int j = 0; j < 7; j++)
-                    {
-                        board[i, j] = '*';
-                    }
-                }
-            }
-            else
-            {
-                Console.WriteLine("Goodbye!");
-            }
-
-            return restart;
-        }
-
         public void Player_win(Player activePlayer)
         {
-            Console.WriteLine(activePlayer.Name + " Connected Four! You _win!");
+            Console.WriteLine(activePlayer.Name + " Connected Four! You win!");
         }
 
 
     }
 
     public class clsController
-    {
-        clsModel model;
-        private char[,] board;
+    {   //Instantiate class clsModel to an object so that you can it in Controller class 
+        clsModel model; 
+
         private int _numsel;
         private int _win;
         private int _full;
-        private int _another;
+        private char _playAgain;
 
         private Player _player1;
         private Player _player2;
@@ -222,7 +187,6 @@ namespace Connect4
             _numsel = 0;
             _win = 0;
             _full = 0;
-            _another = 0;
             model = new clsModel();
         }
 
@@ -232,38 +196,31 @@ namespace Connect4
             this._player2 = player2;
         }
 
-        public void StartGame()
+        public void Play()
         {
             model.DisplayBoard();
 
             do
             {
-                _numsel = model.PlayerDrop(_player1);
-                model.CheckBellow(_player1, _numsel);
+                _numsel = model.PlayerNumber(_player1);
+                model.CheckMove(_player1, _numsel);
                 model.DisplayBoard();
                 _win = model.CheckFour(_player1);
 
                 if (_win == 1)
                 {
                     model.Player_win(_player1);
-                    _another = model.Restart();
-                    if (_another == 2)
-                    {
                         break;
-                    }
                 }
-                _numsel = model.PlayerDrop(_player2);
-                model.CheckBellow(_player2, _numsel);
+
+                _numsel = model.PlayerNumber(_player2);
+                model.CheckMove(_player2, _numsel);
                 model.DisplayBoard();
                 _win = model.CheckFour(_player2);
                 if (_win == 1)
                 {
                     model.Player_win(_player2);
-                    _another = model.Restart();
-                    if (_another == 2)
-                    {
                         break;
-                    }
                 }
 
                 _full = model._fullBoard();
@@ -271,10 +228,9 @@ namespace Connect4
                 if (_full == 7)
                 {
                     Console.WriteLine("The board is _full. It is a draw!");
-                    _another = model.Restart();
                 }
 
-            } while (_another != 2);
+            } while (_playAgain != 'N');
         }
     }
 
@@ -282,16 +238,26 @@ namespace Connect4
     {
         static void Main(string[] args)
         {
-            HumanPlayers Player1 = new HumanPlayers("Gabriel", 'X');
-            HumanPlayers Player2 = new HumanPlayers("Rey", 'O');
+            Console.Write("Enter player 1 name: ");
+            string player1Name = Console.ReadLine();
+            Console.Write("Enter player 1 ID: ");
+            char player1Id = Console.ReadKey().KeyChar;
+            Console.WriteLine();
+
+            Console.Write("Enter player 2 name: ");
+            string player2Name = Console.ReadLine();
+            Console.Write("Enter player 2 ID: ");
+            char player2Id = Console.ReadKey().KeyChar;
+            Console.WriteLine();
+
+            HumanPlayer player1 = new HumanPlayer(player1Name, player1Id);
+            HumanPlayer player2 = new HumanPlayer(player2Name, player2Id);
 
             clsController controller = new clsController();
 
-            controller.SetPlayers(Player1, Player2);
+            controller.SetPlayers(player1, player2);
 
-            controller.StartGame();
-
-
+            controller.Play();
         }
     }
 }
