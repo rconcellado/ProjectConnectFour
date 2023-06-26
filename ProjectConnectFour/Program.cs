@@ -3,10 +3,12 @@ using System.ComponentModel.DataAnnotations;
 using System.Runtime.CompilerServices;
 
 namespace Connect4
-{
+{   //This is an abstract class called Player
     public abstract class Player
-    {
+    {   //Public variable to hold Player's Name 
         public  string Name { get; set; }
+        
+        //public variable to hold Player's Id : X or O
         public char Id { get; set; }
 
         public Player(string name, char id)
@@ -14,13 +16,42 @@ namespace Connect4
             Name = name;
             Id = id;
         }
-    }
 
+        public override string ToString()
+        {
+            return $"Player Name: {Name}, ID: {Id}";
+        }
+
+        // Define the abstract method MakeMove()
+        public abstract int MakeMove();
+    }
+    /*This is a derived class of the Abstract Class Player
+       It inherits the Name and Id of the player*/
     public class HumanPlayer : Player
     {
         public HumanPlayer(string  playerName, char id) : base(playerName, id)
         {
 
+        }
+        public override int MakeMove()
+        {
+            int choice;
+            bool validInput = false;
+
+            do
+            {
+                Console.WriteLine("Please enter a number between 1 and 7: ");
+                string input = Console.ReadLine();
+
+                validInput = int.TryParse(input, out choice) && choice >= 1 && choice <= 7;
+
+                if (!validInput)
+                {
+                    Console.WriteLine("Invalid input. Please try again.");
+                }
+            } while (!validInput);
+
+            return choice;
         }
     }
 
@@ -34,7 +65,8 @@ namespace Connect4
         {
             board = new char[9, 10];
         }
-
+        /*This methos is to diplay the board game of Connect Four 
+          This board contains 6 rows and 7 columns*/
         public void DisplayBoard()
         {
             int rows = 6;
@@ -55,27 +87,7 @@ namespace Connect4
                 Console.Write("| \n");
             }
         }
-
-        public int PlayerNumber(Player activePlayer)
-        {
-            int choice;
-            Console.WriteLine("\n");
-            Console.WriteLine(activePlayer.Name + "'s Turn ");
-            do
-            {
-                Console.WriteLine("Please enter a number between 1 and 7: ");
-                choice = Convert.ToInt32(Console.ReadLine());
-            } while (choice < 1 || choice > 7);
-
-            while (board[1, choice] == 'X' || board[1, choice] == 'O')
-            {
-                Console.WriteLine("That row is _full. Please enter a new row: ");
-                choice = Convert.ToInt32(Console.ReadLine());
-            }
-
-            return choice;
-        }
-
+        
         public void CheckMove(Player activePlayer, int numselect)
         {
             int length = 6;
@@ -94,7 +106,7 @@ namespace Connect4
                 }
             } while (turn != 1);
         }
-
+        /*This method will check if the Player connected the Four pieces of Id*/
         public int CheckFour(Player activePlayer)
         {
             char XO = activePlayer.Id;
@@ -148,7 +160,7 @@ namespace Connect4
 
             return _win;
         }
-
+        /*This method will check if the board is full, otherwise continue to play*/
         public int _fullBoard()
         {
             int _full = 0;
@@ -162,6 +174,7 @@ namespace Connect4
 
             return _full;
         }
+        /*This method will display the winner of the game*/
         public void Player_win(Player activePlayer)
         {
             Console.WriteLine(activePlayer.Name + " Connected Four! You win!");
@@ -175,9 +188,7 @@ namespace Connect4
         clsModel model; 
 
         private int _numsel;
-        private int _win;
-        private int _full;
-        private char _playAgain;
+        //private char _playAgain;
 
         private Player _player1;
         private Player _player2;
@@ -185,8 +196,6 @@ namespace Connect4
         public clsController()
         {
             _numsel = 0;
-            _win = 0;
-            _full = 0;
             model = new clsModel();
         }
 
@@ -200,63 +209,56 @@ namespace Connect4
         {
             model.DisplayBoard();
 
-            do
+            while(true) 
             {
-                _numsel = model.PlayerNumber(_player1);
+                _numsel = _player1.MakeMove();
                 model.CheckMove(_player1, _numsel);
                 model.DisplayBoard();
-                _win = model.CheckFour(_player1);
 
-                if (_win == 1)
+                if (model.CheckFour(_player1) == 1)
                 {
                     model.Player_win(_player1);
                         break;
                 }
-
-                _numsel = model.PlayerNumber(_player2);
+                _numsel = _player1.MakeMove();
                 model.CheckMove(_player2, _numsel);
                 model.DisplayBoard();
-                _win = model.CheckFour(_player2);
-                if (_win == 1)
+                if (model.CheckFour(_player2) == 1)
                 {
                     model.Player_win(_player2);
                         break;
                 }
 
-                _full = model._fullBoard();
-
-                if (_full == 7)
+                if (model._fullBoard() == 7)
                 {
-                    Console.WriteLine("The board is _full. It is a draw!");
+                    Console.WriteLine("The board is full. It is a draw!");
+                    break;
                 }
 
-            } while (_playAgain != 'N');
+            } 
         }
     }
 
     public class Program
     {
         static void Main(string[] args)
-        {
-            Console.Write("Enter player 1 name: ");
-            string player1Name = Console.ReadLine();
-            Console.Write("Enter player 1 ID: ");
-            char player1Id = Console.ReadKey().KeyChar;
-            Console.WriteLine();
+        {   //Instantiate the class HumanPlayer to object Player1 
+            HumanPlayer Player1 = new HumanPlayer("Gabriel", 'X');
+            // Output: Player Name: Gabriel, ID: X
+            Console.WriteLine(Player1.ToString());
 
-            Console.Write("Enter player 2 name: ");
-            string player2Name = Console.ReadLine();
-            Console.Write("Enter player 2 ID: ");
-            char player2Id = Console.ReadKey().KeyChar;
-            Console.WriteLine();
+            //Instantiate the class HumanPlayer to object Player2 
+            HumanPlayer Player2 = new HumanPlayer("Rey", 'O');
+            // Output: Player Name: Rey, ID: O
+            Console.WriteLine(Player2.ToString());  
 
-            HumanPlayer player1 = new HumanPlayer(player1Name, player1Id);
-            HumanPlayer player2 = new HumanPlayer(player2Name, player2Id);
 
+            //Instantiate the class name clsController to object controller
             clsController controller = new clsController();
 
-            controller.SetPlayers(player1, player2);
+            controller.SetPlayers(Player1, Player2);
 
+            //Play is the Main method of the class clsController
             controller.Play();
         }
     }
