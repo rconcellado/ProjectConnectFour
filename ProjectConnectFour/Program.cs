@@ -6,8 +6,8 @@ namespace Connect4
 {   //This is an abstract class called Player
     public abstract class Player
     {   //Public variable to hold Player's Name 
-        public  string Name { get; set; }
-        
+        public string Name { get; set; }
+
         //public variable to hold Player's Id : X or O
         public char Id { get; set; }
 
@@ -22,37 +22,16 @@ namespace Connect4
             return $"Player Name: {Name}, ID: {Id}";
         }
 
-        // Define the abstract method MakeMove()
-        public abstract int MakeMove();
     }
     /*This is a derived class of the Abstract Class Player
        It inherits the Name and Id of the player*/
     public class HumanPlayer : Player
     {
-        public HumanPlayer(string  playerName, char id) : base(playerName, id)
+        public HumanPlayer(string playerName, char id) : base(playerName, id)
         {
 
         }
-        public override int MakeMove()
-        {
-            int choice;
-            bool validInput = false;
-
-            do
-            {
-                Console.WriteLine("Please enter a number between 1 and 7: ");
-                string input = Console.ReadLine();
-
-                validInput = int.TryParse(input, out choice) && choice >= 1 && choice <= 7;
-
-                if (!validInput)
-                {
-                    Console.WriteLine("Invalid input. Please try again.");
-                }
-            } while (!validInput);
-
-            return choice;
-        }
+       
     }
 
     public class clsModel
@@ -86,6 +65,51 @@ namespace Connect4
 
                 Console.Write("| \n");
             }
+        }
+        /*This method will verify the Players input between number 1 to 7
+          It will ensure that the Players can only input between 1 to 7.*/
+        
+        public int PlayerNumber(Player activePlayer)
+        {
+            int choice;
+            Console.WriteLine("\n");
+            Console.WriteLine(activePlayer.Name + "'s Turn ");
+
+            bool validInput = false;
+            do
+            {
+                Console.WriteLine("Please enter a number between 1 and 7: ");
+                string input = Console.ReadLine();
+
+                validInput = int.TryParse(input, out choice) && choice >= 1 && choice <= 7;
+
+                if (!validInput)
+                {
+                    Console.WriteLine("Invalid input. Please try again.");
+                }
+            } while(!validInput);
+
+            while (board[1, choice] == 'X' || board[1, choice] == 'O')
+            {
+                Console.WriteLine("That row is _full. Please enter a new row: ");
+                string input = Console.ReadLine();
+
+                validInput = int.TryParse(input, out choice) && choice >= 1 && choice <= 7;
+
+                if (!validInput)
+                {
+                    Console.WriteLine("Invalid input. Please try again.");
+                    continue;
+                }
+
+                if (board[1, choice] == 'X' || board[1, choice] == 'O')
+                {
+                    Console.WriteLine("That row is full. Please enter a new row: ");
+                    validInput = false;
+                }
+            }
+
+            return choice;
         }
         
         public void CheckMove(Player activePlayer, int numselect)
@@ -185,7 +209,7 @@ namespace Connect4
 
     public class clsController
     {   //Instantiate class clsModel to an object so that you can it in Controller class 
-        clsModel model; 
+        clsModel model;
 
         private int _numsel;
         //private char _playAgain;
@@ -199,7 +223,7 @@ namespace Connect4
             model = new clsModel();
         }
 
-        public void SetPlayers(Player player1 , Player player2)
+        public void SetPlayers(Player player1, Player player2)
         {
             this._player1 = player1;
             this._player2 = player2;
@@ -209,24 +233,27 @@ namespace Connect4
         {
             model.DisplayBoard();
 
-            while(true) 
+            while (true)
             {
-                _numsel = _player1.MakeMove();
+                _numsel = model.PlayerNumber(_player1);
+                //_numsel = _player1.MakeMove();
                 model.CheckMove(_player1, _numsel);
                 model.DisplayBoard();
 
                 if (model.CheckFour(_player1) == 1)
                 {
                     model.Player_win(_player1);
-                        break;
+                    break;
                 }
-                _numsel = _player1.MakeMove();
+
+                _numsel = model.PlayerNumber(_player2);
+                //_numsel = _player1.MakeMove();
                 model.CheckMove(_player2, _numsel);
                 model.DisplayBoard();
                 if (model.CheckFour(_player2) == 1)
                 {
                     model.Player_win(_player2);
-                        break;
+                    break;
                 }
 
                 if (model._fullBoard() == 7)
@@ -235,7 +262,7 @@ namespace Connect4
                     break;
                 }
 
-            } 
+            }
         }
     }
 
@@ -250,7 +277,7 @@ namespace Connect4
             //Instantiate the class HumanPlayer to object Player2 
             HumanPlayer Player2 = new HumanPlayer("Rey", 'O');
             // Output: Player Name: Rey, ID: O
-            Console.WriteLine(Player2.ToString());  
+            Console.WriteLine(Player2.ToString());
 
 
             //Instantiate the class name clsController to object controller
